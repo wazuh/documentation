@@ -5,13 +5,12 @@
 Decoders Syntax
 ===============
 
-The decoders extract the information from the received events.
-When an event is received, the decoders separate the information in blocks to prepare them for their subsequent analysis.
+Decoders extract the information from the received events into separated fields so the analysis engine can process them properly.
 
 Options
 -------
 
-There is many options to configure the decoders:
+These are the available options to build a new decoder or to modify an existing one:
 
 - `decoder`_
 - `parent`_
@@ -31,7 +30,7 @@ There is many options to configure the decoders:
 decoder
 ^^^^^^^
 
-The attributes listed below define a decoder.
+Option to define a decoder. Used with the following attributes:
 
 +-----------+---------------------------+
 | Attribute | Description               |
@@ -41,20 +40,10 @@ The attributes listed below define a decoder.
 | type      | The type of the decoder   |
 +-----------+---------------------------+
 
-Example:
-
-Set name and type of decoder to *ossec*:
-
-  .. code-block:: xml
-
-    <decoder name="ossec" type ="ossec">
-      ...
-    </decoder>
-
 parent
 ^^^^^^
 
-It is used to link a subordinate codeblock to his parent.
+It is used to link a child decoder to a parent decoder.
 
 +--------------------+------------------+
 | **Default Value**  | n/a              |
@@ -62,21 +51,25 @@ It is used to link a subordinate codeblock to his parent.
 | **Allowed values** | Any decoder name |
 +--------------------+------------------+
 
-Example:
+Assign the decoder to its parent:
 
-Assign the decoder which father it belongs:
+.. code-block:: xml
+  
+  <decoder name="decoder_parent">
+    <program_name>^example</program_name>
+  </decoder>
 
-  .. code-block:: xml
-    
-    <decoder name="decoder_junior">
-      <parent>decoder_father</parent>
-      ...
-    </decoder>
+  <decoder name="decoder_junior">
+    <parent>decoder_parent</parent>
+    <prematch>\w+ logged from</prematch>
+    <regex>User '(\w+)' logged from '(\d+.\d+.\d+.\d+)'</regex>
+    <order>user, srcip</order>
+  </decoder>
 
 accumulate
-^^^^^^^^^^^
+^^^^^^^^^^
 
-Allow Wazuh to track events over multiple log messages based on a decoded id.
+This option allows Wazuh to track events over multiple log messages based on a decoded id.
 
 .. note::
 
@@ -87,9 +80,9 @@ Allow Wazuh to track events over multiple log messages based on a decoded id.
 +--------------------+--------------------+
 
 program_name
-^^^^^^^^^^^^^
+^^^^^^^^^^^^
 
-It defines the name of the program with which the decoder is associated.
+It associates the decoder to the pre-decoded program name.
 
 +--------------------+--------------------------------------------------------------------+
 | **Default Value**  | n/a                                                                |
@@ -97,21 +90,18 @@ It defines the name of the program with which the decoder is associated.
 | **Allowed values** | Any `sregex expression <regex.html#os-match-or-sregex-syntax>`_    |
 +--------------------+--------------------------------------------------------------------+
 
-Example:
-
-Define that the decoder is related with the ``syslogd`` process:
-
+As an example, the decoder additioned with this option will match events generated when the program **reboot** is executed:
+  
   .. code-block:: xml
 
-    <decoder name="syslogd_decoder">
-      <program_name>syslogd</program_name>
-      ...
-    </decoder>
+    <program_name>reboot</program_name>
 
 prematch
-^^^^^^^^^
+^^^^^^^^
 
 It attempts to find a match within the log for the string defined.
+
+Used along with order <regex>, it eliminates certain strings from the events so they don't generate information in the alerts.
 
 +--------------------+--------------------------------------------------------------------+
 | **Default Value**  | n/a                                                                |
@@ -121,23 +111,33 @@ It attempts to find a match within the log for the string defined.
 
 The attribute below is optional, it allows to discard some of the content of the entry.
 
-+--------------------+--------------------+
-| Attribute          | Value              |
-+====================+====================+
-| **offset**         | after_regex        |
-+--------------------+--------------------+
++--------------------+---------------+
+| Attribute          | Value         |
++====================+===============+
+| **offset**         | after_regex   |
++--------------------+---------------+
+
+As an example:
+
+.. code-block:: xml
+
+    <decoder name="roundcube-denied-new">
+      <parent>roundcube</parent>
+      <prematch>> \w+ Error: Login failed |> Failed login </prematch>
+      <regex offset="after_prematch">^for (\S+) from (\S+)\. |^for (\S+) from (\S+) in session </regex>
+      <order>user, srcip</order>
+    </decoder>
+
+There, thanks to the ``<prematch>`` option, the string it contains will be skipped in the event, and the decoding process will start with the content of the ``<regex>`` option.
+
+.. note::
+  Many <prematch> options can be attached to the same decoder.
+
 
 regex
-^^^^^^^
+^^^^^
 
-**Regular expressions** or ``regex`` are sequences of characters that define a pattern.
-Decoders use them to find words or other patterns into the rules.
-
-An example is this regex that matches any numeral:
-
-  ..code-block:: xml
-    <regex> [+-]?(\d+(\.\d+)?|\.\d+)([eE][+-]?\d+)? </regex>
-
+Decoders use ``<regex>`` option to extract information from the plain log.
 
 +--------------------+--------------------------------------------------------------------+
 | **Default Value**  | n/a                                                                |
@@ -157,23 +157,15 @@ The attribute below is optional, it allows to discard some of the content of the
 |                    | after_prematch     |
 +--------------------+--------------------+
 
-Example:
-
-Show when an user executed the sudo command for the first time:
+An example is this regular expression that matches any user name:
 
 .. code-block:: xml
 
-  <decoder name="sudo-fields">
-    <parent>sudo</parent>
-    <prematch>\s</prematch>
-    <regex>^\s*(\S+)\s*:</regex>
-    <order>srcuser</order>
-    <fts>name,srcuser,location</fts>
-    <ftscomment>First time user executed the sudo command</ftscomment>
-  </decoder>
+  <regex>User name=(\S+)$</regex>
+
 
 order
-^^^^^^
+^^^^^
 
 It defines what the parenthesis groups contain and the order in which they were received.
 
@@ -209,8 +201,17 @@ It defines what the parenthesis groups contain and the order in which they were 
 | **Dynamic fields** | Any string not included in the previous list                       |
 +--------------------+------------+-------------------------------------------------------+
 
+This options is used as follows:
+
+  .. code-block:: xml
+
+    <order>srcip, dstip, id, extra_data</order>
+
+This way we sort the fields in this order in the generated events.
+
+
 fts
-^^^^
+^^^
 
 It is used to designate a decoder as one in which the first time it matches the administrator would like to be alerted.
 
@@ -246,21 +247,10 @@ It is used to designate a decoder as one in which the first time it matches the 
 |                    | extra_data | Any extra data                                        |
 +--------------------+------------+-------------------------------------------------------+
 
-Example:
-
-The following decoder will extract the user who generated the alert and the location from where it comes:
-
-  .. code-block:: xml
-  
-    </decoder>
-      <fts>srcuser, location</fts>
-      ...
-    </decoder>
-
 ftscomment
-^^^^^^^^^^^
+^^^^^^^^^^
 
-It adds a comment to a decoder when `<fts>` tag is used.
+This option adds a comment to a decoder when `<fts>` tag is used.
 
 +--------------------+------------+
 | **Default Value**  | n/a        |
@@ -269,7 +259,7 @@ It adds a comment to a decoder when `<fts>` tag is used.
 +--------------------+------------+
 
 plugin_decoder
-^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^
 
 Use a specific plugin decoder to decode the incoming fields. It is useful for particular cases where it would be tricky to extract the fields by using regexes.
 
@@ -300,7 +290,7 @@ The attribute below is optional, it allows to start the decode process after a p
 An example of its use is described at the :doc:`JSON decoder <../json-decoder>` section.
 
 use_own_name
-^^^^^^^^^^^^^
+^^^^^^^^^^^^
 
 Allows to set the name of the child decoder from the name attribute instead of using the name of the parent decoder.
 
@@ -309,6 +299,8 @@ Allows to set the name of the child decoder from the name attribute instead of u
 +--------------------+------------+
 | **Allowed values** | true       |
 +--------------------+------------+
+
+As we saw in the ``<parent>`` option, when decoding having a father assigned, in the events the name of the decoder will be the parent's name. With this option, we change that to show the own name of the decoder although it has a defined parent decoder.
 
 json_null_field
 ^^^^^^^^^^^^^^^
@@ -325,30 +317,30 @@ Specify how to treat the `NULL` fields coming from the JSON events. Only for the
 |                    | empty (It shows the NULL field as an empty field)                       |
 +--------------------+-------------------------------------------------------------------------+
 
+For example, if we want to discard all the *NULL* fields from a JSON event, we just add:
+
+  .. code-block:: xml
+
+    <json_null_field> discard </json_null_field>
+
+
 location
 ^^^^^^^^
 
-Points the source where the event has been readed, like a log file or an agent.
+Forces the decoder to match logs that have been collected from that location.
 
 +--------------------+-------------------------------------------------------------------------+
 | **Default Value**  | string                                                                  |
 +--------------------+-------------------------------------------------------------------------+
-| **Allowed values** | File path (`/var/log/syslog`)                                           |
-+                    +-------------------------------------------------------------------------+
-|                    | An agent (`(ubuntu)->192.168.1.22`)                                     |
+| **Allowed values** | Any `sregex expression <regex.html#os-match-or-sregex-syntax>`_         |
 +--------------------+-------------------------------------------------------------------------+
 
-Example:
+As an example, we can set this field to a specific IP, or any other source, to match the logs from there:
 
-  .. code-block:: xml 
+  .. code-block:: xml
+
+    <location> 10.0.0.1 </location>
     
-    <decoder name="home_decoder">
-      <location> /home/user </location>
-      ...
-    </decoder>
-
-Only filters the events related to the path ``/home/user``.
-
 var
 ^^^
 

@@ -5,7 +5,7 @@
 Rules Syntax
 ============
 
-In this section, **xml labels** used to configure ``rules`` are listed.
+After the decoding process, the analysis engine iterates over all the ruleset looking for occurrences that match a rule in order to determine if the log would generate an alert.
 
 Available options
 -----------------
@@ -36,6 +36,7 @@ Available options
 - `same_source_ip`_
 - `same_src_port`_
 - `same_dst_port`_
+- `same_field`_
 - `same_location`_
 - `same_user`_
 - `different_url`_
@@ -50,12 +51,8 @@ Available options
 - `location`_
 - `var`_
 
-  - `BAD_WORDS`_
-
 rule
 ^^^^
-
-``<rule>`` is the label that starts the block that defines a *rule*. In this section the different options to this label are explained.
 
 +---------------+----------------+----------------------------------------------------------------------------------------+
 | **level**     | Definition     | Specifies the level of the rule. Alerts and responses use this value.                  |
@@ -91,16 +88,14 @@ rule
 |               | Allowed values | Attribute with no value                                                                |
 +---------------+----------------+----------------------------------------------------------------------------------------+
 
-Example:
+Multiple of this field can be added to the same rule as follows:
 
   .. code-block:: xml
 
-    <!--- Rule definition -->
-    <rule id="100001" maxsize="300" level="3">
-      ...
+    <rule id="100010" level="1" ignore="10">
+      (Rule content)
     </rule>
 
-In this example, the rule is assigned with the ID 100001, a maximum size of each event of 300 characters and the rule level in 3.
 
 match
 ^^^^^
@@ -112,21 +107,19 @@ Any string to match against the log event.
 | **Allowed values** | Any `sregex expression <regex.html#os-match-or-sregex-syntax>`_ |
 +--------------------+-----------------------------------------------------------------+
 
-Example:
+The *analysis engine* will search in the log the content of this label to check if a rule should trigger.
+
+As an example, here is a custom rule that triggers when a log that contains the word **Error** is catched:
 
   .. code-block:: xml
 
-    <rule id="100001" maxsize="300" level="3">
-      <if_sid>100020</if_sid>
-      <match>Queue flood!</match>
-      <description> Flooded events queue.</description>
+    <rule id="100005" level="4">
+      <match>Error</match>
+      <description> Rule that matches errors. </description>
     </rule>
-
-If the rule matches the ``id`` 100200 that contains the ``Queue flood!`` phrase in it, rule activates and sends an event.
 
 regex
 ^^^^^
-
 Any regex to match against the log event.
 
 +--------------------+---------------------------------------------------------------+
@@ -137,19 +130,17 @@ Any regex to match against the log event.
 
 Example:
 
-  ``regex`` is used to find a variety of strings in a rule. For example, if we want to match any valid IP:
+    An example is this regular expression that matches any IP address:
 
   .. code-block:: xml
 
-    <rule>
-      <if_sid>10050</if_sid>
-      <regex>^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$</regex>
-      <description>Matches any valid IP</description>
-    </rule>
+    <regex>(\d+.\d+.\d+.\d+)</regex>
 
 
 decoded_as
 ^^^^^^^^^^
+
+Specifies the decoder name which generated the decoded event log.
 
 +--------------------+------------------+
 | **Default Value**  | n/a              |
@@ -157,25 +148,37 @@ decoded_as
 | **Allowed values** | Any decoder name |
 +--------------------+------------------+
 
+As a example, if we have a decoder named *mydecoder*:
+
+  .. code-block:: xml
+
+    <decoded_as> mydecoder </decoded_as>
+
 category
 ^^^^^^^^
 
 Selects in which rule decoding category the rule should be included: ids, syslog, firewall, web-log, squid or windows.
 
-+--------------------+--------------+
-| **Default Value**  | n/a          |
-+--------------------+--------------+
-| **Allowed values** | Any category |
-+--------------------+--------------+
++--------------------+--------------------+
+| **Default Value**  | n/a                |
++--------------------+--------------------+
+| **Allowed values** | Any valid category |
++--------------------+--------------------+
 
 field
 ^^^^^
 
-Any ``sregex`` to be compared to a field extracted by the decoder.
+Any `sregex <regex.html#os-match-or-sregex-syntax>`_ to be compared to a dynamic field extracted by the decoder.
 
 +----------+-----------------------------------------------------------+
 | **name** | Specifies the name of the field extracted by the decoder. |
 +----------+-----------------------------------------------------------+
+
+Here is an example of this option, which rule will only trigger when the *level* field includes a "10", it does not matter if the other fields of the log include it.
+
+  .. code-block:: xml
+
+    <field name="level"> 10 </field>
 
 srcip
 ^^^^^
@@ -265,8 +268,18 @@ Week day that the event was generated.
 | **Allowed values** | monday - sunday, weekdays, weekends |
 +--------------------+-------------------------------------+
 
+Here is a real example used in Wazuh on how to use this option:
+
+  .. code-block:: xml
+
+    <rule id="17102" level="9">
+      <if_group>authentication_success</if_group>
+      <weekday>weekends</weekday>
+      <description>Successful login during weekend.</description>
+    </rule>
+
 id
-^^
+^^^
 
 Any ID (decoded as the ID).
 
@@ -300,14 +313,6 @@ The event extended location of the incoming event.
 | **Allowed values** | Any `sregex expression <regex.html#os-match-or-sregex-syntax>`_  |
 +--------------------+------------------------------------------------------------------+
 
-The location identifies the origin of the input. If the event comes from an agent, its name and registered IP (as it was added) is appended to the location.
-
-Example of a location for a log pulled from "/var/log/syslog" in an agent with name "dbserver" and registered with IP "any":
-
-::
-
-    (dbserver) any->/var/log/syslog
-
 The following components use a static location:
 
 +----------------------+------------------------+
@@ -337,16 +342,26 @@ The following components use a static location:
 +----------------------+------------------------+
 | CIS-CAT integration  | wodle_cis-cat          |
 +----------------------+------------------------+
+
+As a example, if we would want to see the incoming events from osquery:
+
+  .. code-block:: xml
+
+    <rule id="24000" level="3">
+      <location>osquery$</location>
+      <description>osquery message</description>
+    </rule>
+
 action
 ^^^^^^
 
 Any action (decoded as the ACTION).
 
-+--------------------+----------------------+
-| **Default Value**  | n/a                  |
-+--------------------+----------------------+
-| **Allowed values** | Any String.          |
-+--------------------+----------------------+
++--------------------+---------------------------------------------+
+| **Default Value**  | n/a                                         |
++--------------------+---------------------------------------------+
+| **Allowed values** | Any event action (deny, drop, accept, etc)  |
++--------------------+---------------------------------------------+
 
 if_sid
 ^^^^^^
@@ -410,7 +425,6 @@ This option is used in conjunction with frequency and timeframe.
 | **Allowed values** | Any Group |
 +--------------------+-----------+
 
-
 same_id
 ^^^^^^^
 
@@ -471,6 +485,40 @@ This option is used in conjunction with frequency and timeframe.
 | **Example of use** | <same_user />      |
 +--------------------+--------------------+
 
+same_field
+^^^^^^^^^^
+
+.. versionadded:: 3.9.0
+
+``<same_field>`` and ``<not_same_field>`` are options that match when the value of a dynamic field from an incoming event is the same as the one of a previous event which matched the same rule, or backwards in the ``<not_same_field>`` case.
+
++--------------------+-----------+
+| **Default Value**  | n/a       |
++--------------------+-----------+
+| **Allowed values** | Any filed |
++--------------------+-----------+
+
+Use case:
+
+.. code-block:: xml
+
+  <rule id="100001" level="3">
+    <if_sid>221</if_sid>
+    <field name="netinfo.iface.name">ens33</field>
+    <description>Testing interface alert</description>
+  </rule>
+
+  <rule id="100002" level="7" frequency="3" timeframe="300">
+    <if_matched_sid>100001</if_matched_sid>
+    <same_field>netinfo.iface.name</same_field>
+    <same_field>netinfo.iface.mac</same_field>
+    <not_same_field>netinfo.iface.rx_bytes</not_same_field>
+    <options>no_full_log</options>
+    <description>Testing options for correlating repeated fields</description>
+  </rule>
+
+Rule 100002 matches when the third network inventory scan reports the same MAC address for the interface ``ens33`` but the amount of received packets has changed between events. 
+
 different_url
 ^^^^^^^^^^^^^
 
@@ -493,24 +541,24 @@ This option is used in conjunction with frequency and timeframe.
 
 Example:
 
-  As a example to this last options, check this rule:
+  As a example of this last options, here is a rule that integrates a couple of them:
 
     .. code-block:: xml
       
       <rule id=100005 level="0">
-        <match> Could not open /home </match>
+        <match> Could not open /var/ossec </match>
         <same_user />
         <different_srcgeoip />
         <same_dst_port />
       </rule>
 
-  That rule filters when the same ``user`` tries to open file ``/home`` but returns an error, on a different ``ip`` and using same ``port``.
+  That rule filters when the same ``user`` tries to open the folder ``/var/ossec`` from a different ``ip`` and using the same ``port``, but returns an error.
 
 description
 ^^^^^^^^^^^
 
 Used to add a description to a rule so it makes more clear and readable its funcionality.
-This option apports more readable information for the users, so is usually added to the rules.
+This option apports more readable information for the users so is usually added to the rules.
 
 +--------------------+------------+
 | **Default Value**  | n/a        |
@@ -523,22 +571,21 @@ Examples:
   .. code-block:: xml
 
     <rule id="100009" level="1">
-      ...
-      <regex>^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$</regex>
+      <regex>(\d+.\d+.\d+.\d+)</regex>
       <description> Rule to match IPs </description>
     </rule>
 
-    <rule id="100015" level="2">
-      ...
-      <description> A timeout occured. </description>
-    </rule>
+  A rule description will be shown when decoded as:
+  
+  .. code-block:: bash
 
-    <rule id="100035" level="4">
-      ...
-      <description> File missing. Root acces unrestricted. </description>
-    </rule>
-
-Since Wazuh v3.3.0 it is possible to include any decoded field (static or dynamic) to the description message.
+    **Phase 3: Completed filtering (rules)
+    Rule id: '100009'
+    Level: '1'
+    Description: 'Rule to match IPs'
+    ...
+      
+.. note:: Since Wazuh v3.3.0 it is possible to include any decoded field (static or dynamic) to the description message.
 
 list
 ^^^^
@@ -623,10 +670,11 @@ Example:
       <match>illegal user|invalid user</match>
       <description>sshd: Attempt to login using a non-existent user</description>
       <options>no_log</options>
+      <options>alert_by_email</options>
     </rule>
 
 .. note::
-  Use one ``<options>`` tag for each option you want to add.
+  Use one ``<options>`` tag for each value added.
 
 .. _rules_check_diff:
 
@@ -652,14 +700,32 @@ Example:
 
   .. code-block:: xml
 
-    <rule id="3801" level="4">
-      <description>Group for rules related with spam.</description>
-      <group>spam,</group>
-    </rule>
+    <group name="osquery,">
 
-Now, every rule with the line ``<group>spam,</group>`` will be included in that group.
+      <rule id="24000" level="3">
+        <location>osquery$</location>
+        <description>osquery: $(osquery.pack) query result</description>
+      </rule>
 
-It's a very useful label to keep the rules ordered.
+    </group>
+
+Now, every rule included in this ``<group> </group>`` block will belong to that group.
+
+So if we add the next line to that rule:
+
+  .. code-block:: xml
+
+    <group>osquery_monitoring,</group>
+
+The rule will belong to the group ``osquery`` and ``osquery_monitoring`` at the same time.
+
+Also, after have declared the ``osquery`` group, other rules can be added to this group by adding them the line:
+
+  .. code-block:: xml
+
+    <group>osquery,</group>
+
+This is a very useful option to improve the filtering and ordering of rules.
 
 +--------------------+------------+
 | **Default Value**  | n/a        |
@@ -711,7 +777,7 @@ BAD_WORDS
 
 <var name="BAD_WORDS">error|warning|failure</var>
 
-``BAD_WORDS`` is a very used use case of ``<var>`` option.
+``BAD_WORDS`` is a very used case of ``<var>`` option.
 
 Is used to include many words in the same variable. Later, this variable can be matched into the decoders to check if any of those words are in a caught event.
 
@@ -719,10 +785,10 @@ Example:
 
   .. code-block:: xml
 
-    <var name="BAD_WORDS">error|warning|failure</var>
+    <var name="BAD_WORDS">error| warning |failure</var>
 
     <group name="syslog,errors,">
-      <rule id="XXXX" level="2">
+      <rule id="100300" level="2">
         <match>$BAD_WORDS</match>
         <description>Error found.</description>
       </rule>
