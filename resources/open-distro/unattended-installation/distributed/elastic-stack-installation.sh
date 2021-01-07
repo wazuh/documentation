@@ -220,7 +220,7 @@ installElasticsearch() {
 
         logger "Configuring Elasticsearch..."
 
-        eval "curl -so /etc/elasticsearch/elasticsearch.yml https://raw.githubusercontent.com/wazuh/wazuh-documentation/4.0/resources/open-distro/unattended-installation/distributed/templates/elasticsearch_unattended.yml --max-time 300 ${debug}"
+        eval "curl -so /etc/elasticsearch/elasticsearch.yml https://raw.githubusercontent.com/wazuh/wazuh-documentation/3074_installation_guide_new_structure/resources/open-distro/unattended-installation/distributed/templates/elasticsearch_unattended.yml --max-time 300 ${debug}"
         
         if [ -n "${single}" ]; then
             nh=$(awk -v RS='' '/network.host:/' ~/config.yml)
@@ -278,9 +278,9 @@ installElasticsearch() {
         fi        
         #awk -v RS='' '/## Elasticsearch/' ~/config.yml >> /etc/elasticsearch/elasticsearch.yml
 
-        eval "curl -so /usr/share/elasticsearch/plugins/opendistro_security/securityconfig/roles.yml https://raw.githubusercontent.com/wazuh/wazuh-documentation/4.0/resources/open-distro/elasticsearch/roles/roles.yml --max-time 300 ${debug}"
-        eval "curl -so /usr/share/elasticsearch/plugins/opendistro_security/securityconfig/roles_mapping.yml https://raw.githubusercontent.com/wazuh/wazuh-documentation/4.0/resources/open-distro/elasticsearch/roles/roles_mapping.yml --max-time 300 ${debug}"
-        eval "curl -so /usr/share/elasticsearch/plugins/opendistro_security/securityconfig/internal_users.yml https://raw.githubusercontent.com/wazuh/wazuh-documentation/4.0/resources/open-distro/elasticsearch/roles/internal_users.yml --max-time 300 ${debug}"
+        eval "curl -so /usr/share/elasticsearch/plugins/opendistro_security/securityconfig/roles.yml https://raw.githubusercontent.com/wazuh/wazuh-documentation/3074_installation_guide_new_structure/resources/open-distro/elasticsearch/roles/roles.yml --max-time 300 ${debug}"
+        eval "curl -so /usr/share/elasticsearch/plugins/opendistro_security/securityconfig/roles_mapping.yml https://raw.githubusercontent.com/wazuh/wazuh-documentation/3074_installation_guide_new_structure/resources/open-distro/elasticsearch/roles/roles_mapping.yml --max-time 300 ${debug}"
+        eval "curl -so /usr/share/elasticsearch/plugins/opendistro_security/securityconfig/internal_users.yml https://raw.githubusercontent.com/wazuh/wazuh-documentation/3074_installation_guide_new_structure/resources/open-distro/elasticsearch/roles/internal_users.yml --max-time 300 ${debug}"
         eval "rm /etc/elasticsearch/esnode-key.pem /etc/elasticsearch/esnode.pem /etc/elasticsearch/kirk-key.pem /etc/elasticsearch/kirk.pem /etc/elasticsearch/root-ca.pem -f ${debug}"
         eval "mkdir /etc/elasticsearch/certs ${debug}"
         eval "cd /etc/elasticsearch/certs ${debug}"
@@ -329,17 +329,51 @@ createCertificates() {
   
 
     logger "Creating the certificates..."
-    eval "curl -so ~/search-guard-tlstool-1.8.zip https://maven.search-guard.com/search-guard-tlstool/1.8/search-guard-tlstool-1.8.zip --max-time 300 ${debug}"
-    eval "unzip ~/search-guard-tlstool-1.8.zip -d ~/searchguard ${debug}"
-    eval "curl -so ~/searchguard/search-guard.yml https://raw.githubusercontent.com/wazuh/wazuh-documentation/4.0/resources/open-distro/unattended-installation/distributed/templates/search-guard-unattended.yml --max-time 300 ${debug}"
+    eval "mkdir /etc/elasticsearch/certs ${debug}"
+    eval "cd /etc/elasticsearch/certs ${debug}"
+    eval "curl -so ~/wazuh-cert-tool.sh https://raw.githubusercontent.com/wazuh/wazuh-documentation/3074_installation_guide_new_structure/resources/open-distro/certificate-utility/wazuh-cert-tool.sh --max-time 300 ${debug}"
+    eval "curl -so ~/instances.yml https://raw.githubusercontent.com/wazuh/wazuh-documentation/3074_installation_guide_new_structure/resources/open-distro/certificate-utility/instances.yml --max-time 300 ${debug}"
 
-    if [ -n "${single}" ]; then
-        echo -e "\n" >> ~/searchguard/search-guard.yml
-        echo "nodes:" >> ~/searchguard/search-guard.yml
-        echo '  - name: "'${iname}'"' >> ~/searchguard/search-guard.yml
-        echo '    dn: CN="'${iname}'",OU=Docu,O=Wazuh,L=California,C=US' >> ~/searchguard/search-guard.yml
-        echo '    ip:' >> ~/searchguard/search-guard.yml
-        echo '      - "'${nip}'"' >> ~/searchguard/search-guard.yml
+    reip=$(awk -v RS='' '/network.host: /' ~/config.yml) 
+    r="network.host: "
+    eip="${reip//$r}"
+
+    rwip=$(awk -v RS='' '/# Wazuh-master-configuration/' ~/config.yml) 
+    r="# Wazuh-master-configuration"
+    r2="- "
+    wip="${rwip//$r}"
+
+    rkip=$(awk -v RS='' '/# Kibana-instance/' ~/config.yml) 
+    r="# Kibana-instance"
+    r2="- "
+    kip="${rkip//$r}"  
+
+    touch ~/instances.yml
+    echo "# Elasticsearch node" >> ~/instances.yml
+    echo "elasticsearch-node:" >> ~/instances.yml
+    echo "   - name: ${iname}" >> ~/instances.yml
+    echo "   ip:" >> ~/instances.yml
+    echo "    - node-${eip}" >> ~/instances.yml
+    echo -e "\n" >> ~/instances.yml
+    echo "# Wazuh server node" >> ~/instances.yml
+    echo "wazuh-server:" >> ~/instances.yml
+    echo "    - name: filebeat" >> ~/instances.yml
+    echo "    ip:" >> ~/instances.yml
+    echo "        ${wip}" >> ~/instances.yml      
+    echo -e "\n" >> ~/instances.yml
+    echo "# Kibana node" >> ~/isntances.yml
+    echo "kibana:" >> ~/isntances.yml
+    echo "   - name: kibana" >> ~/instances.yml
+    echo "    ip:" >> ~/instances.yml
+    echo "        ${kip}" >> ~/instances.yml
+
+    # if [ -n "${single}" ]; then
+    #     echo -e "\n" >> ~/searchguard/search-guard.yml
+    #     echo "nodes:" >> ~/searchguard/search-guard.yml
+    #     echo '  - name: "'${iname}'"' >> ~/searchguard/search-guard.yml
+    #     echo '    dn: CN="'${iname}'",OU=Docu,O=Wazuh,L=California,C=US' >> ~/searchguard/search-guard.yml
+    #     echo '    ip:' >> ~/searchguard/search-guard.yml
+    #     echo '      - "'${nip}'"' >> ~/searchguard/search-guard.yml
     else 
         echo -e "\n" >> ~/searchguard/search-guard.yml
         echo "nodes:" >> ~/searchguard/search-guard.yml       
@@ -358,8 +392,8 @@ createCertificates() {
     echo '    ip:' >> ~/searchguard/search-guard.yml
     echo '      - "'${kip}'"' >> ~/searchguard/search-guard.yml      
     awk -v RS='' '/# Clients certificates/' ~/config.yml >> ~/searchguard/search-guard.yml
-    eval "chmod +x ~/searchguard/tools/sgtlstool.sh ${debug}"
-    eval "bash ~/searchguard/tools/sgtlstool.sh -c ~/searchguard/search-guard.yml -ca -crt -t /etc/elasticsearch/certs/ ${debug}"
+    
+    bash ~/wazuh-cert-tool.sh
     if [  "$?" != 0  ]; then
         echo "Error: certificates were not created"
         exit 1;
@@ -439,7 +473,7 @@ installKibana() {
         echo "Error: Kibana installation failed"
         exit 1;
     else  
-        eval "curl -so /etc/kibana/kibana.yml https://raw.githubusercontent.com/wazuh/wazuh-documentation/4.0/resources/open-distro/unattended-installation/distributed/templates/kibana_unattended.yml --max-time 300 ${debug}"
+        eval "curl -so /etc/kibana/kibana.yml https://raw.githubusercontent.com/wazuh/wazuh-documentation/3074_installation_guide_new_structure/resources/open-distro/unattended-installation/distributed/templates/kibana_unattended.yml --max-time 300 ${debug}"
         eval "cd /usr/share/kibana ${debug}"
         eval "sudo -u kibana /usr/share/kibana/bin/kibana-plugin install https://packages.wazuh.com/4.x/ui/kibana/wazuh_kibana-4.0.3_7.9.1-1.zip ${debug}"
         if [  "$?" != 0  ]; then

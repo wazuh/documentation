@@ -2,19 +2,61 @@
 
 .. meta:: :description: Learn how to install Wazuh and Elastic Stack on a single host
 
+:orphan:
+
 .. _basic_all_in_one:
 
 Step-by-step installation
 =========================
 This document guides through an installation of the Wazuh server and Elastic stack components in an all-in-one configuration. This guide provides instructions to configure the official repositories to do the installations, alternatively, all the available packages can be found :ref:`here <packages>`. 
 
-.. note:: Root user privileges are required to execute all the commands described below.
+Requirements
+------------
+
+The Wazuh server and Elastic Stack components can be installed in the following Linux operating systems:
+
+- Amazon Linux 1 and 2.
+
+- CentOS 6 or greater.
+
+- Debian 7 or greater.
+
+- Fedora 31 or greater.
+
+- Oracle Linux 6 or greater.
+
+- Red Hat Enterprise Linux 6 or greater.
+
+- Ubuntu 12 or greater.
+
+In an all-in-one deployment, Wazuh server and Elastic Stack, are installed on the same host. This type of deployment is suitable for testing and small production environments. A typical use case for this type of environment supports around 100 agents.  
+
+The minimum requirements for this type of deployment are 4 GB of RAM and 2 CPU cores and the recommended are 16 GB of RAM and 8 CPU cores. A 64-bit operating system is necessary. 
+
+Disk space requirements depend on the alerts per second (APS) generated. The expected APS vary greatly depending on the amount and type of monitored endpoints, the following table provides an estimate of the storage per agent needed for 90 days of alerts depending on the type of monitored endpoint.
+
++-------------------------------------------------+-----+-----------------------------+
+| Monitored endpoints                             | APS |  Storage (GB/90 days)       | 
++=================================================+=====+=============================+
+| Servers                                         | 0.25|    3.8                      |     
++-------------------------------------------------+-----+-----------------------------+
+| Workstations                                    | 0.1 |    1.5                      |                   
++-------------------------------------------------+-----+-----------------------------+       
+| Network devices                                 | 0.5 |    7.6                      |
++-------------------------------------------------+-----+-----------------------------+
+
+For example for an environment with 80 workstations, 10 servers and 10 networks devices the storage needed for 90 days of alerts would be around 236 GB.
+
 
 Prerequisites
 -------------
+
+.. note:: Root user privileges are required to execute all the commands described below.
+
+
 Some extra packages are needed for the installation, such us ``curl`` or ``unzip``, that will be used in further steps: 
 
-.. include:: ../../../../_templates/installations/basic/before_installation_all_in_one.rst
+.. include:: ../../../_templates/installations/basic/before_installation_all_in_one.rst
 
 .. _basic_all_in_one_elastic:
 
@@ -32,21 +74,21 @@ Adding the Elastic Stack repository
   .. group-tab:: Yum
 
 
-    .. include:: ../../../../_templates/installations/basic/elastic/yum/add_repository.rst
+    .. include:: ../../../_templates/installations/basic/elastic/yum/add_repository.rst
 
 
 
   .. group-tab:: APT
 
 
-    .. include:: ../../../../_templates/installations/basic/elastic/deb/add_repository.rst
+    .. include:: ../../../_templates/installations/basic/elastic/deb/add_repository.rst
 
 
 
   .. group-tab:: ZYpp
 
 
-    .. include:: ../../../../_templates/installations/basic/elastic/zypp/add_repository.rst
+    .. include:: ../../../_templates/installations/basic/elastic/zypp/add_repository.rst
 
 
 
@@ -60,24 +102,24 @@ Elasticsearch installation and configuration
       .. group-tab:: Yum
 
 
-        .. include:: ../../../../_templates/installations/basic/elastic/yum/install_elasticsearch.rst
+        .. include:: ../../../_templates/installations/basic/elastic/yum/install_elasticsearch.rst
 
 
 
       .. group-tab:: APT
 
 
-        .. include:: ../../../../_templates/installations/basic/elastic/deb/install_elasticsearch.rst
+        .. include:: ../../../_templates/installations/basic/elastic/deb/install_elasticsearch.rst
 
 
 
       .. group-tab:: ZYpp
 
 
-        .. include:: ../../../../_templates/installations/basic/elastic/zypp/install_elasticsearch.rst
+        .. include:: ../../../_templates/installations/basic/elastic/zypp/install_elasticsearch.rst
 
 
-#. .. include:: ../../../../_templates/installations/basic/elastic/common/elastic-single-node/configure_elasticsearch_aio.rst
+#. .. include:: ../../../_templates/installations/basic/elastic/common/elastic-single-node/configure_elasticsearch_aio.rst
 
 
 Certificates creation and deployment
@@ -87,7 +129,7 @@ Certificates creation and deployment
 
     .. code-block:: console
 
-        # curl -so /usr/share/elasticsearch/instances.yml https://raw.githubusercontent.com/wazuh/wazuh-documentation/4.0/resources/elastic-stack/instances_aio.yml
+        # curl -so /usr/share/elasticsearch/instances.yml https://raw.githubusercontent.com/wazuh/wazuh-documentation/3074_installation_guide_new_structure/resources/elastic-stack/instances_aio.yml
     
     
     In the following steps, a file that contains a folder named after the instance defined here will be created. This folder will contain the certificates and the keys necessary to communicate with the Elasticsearch node using SSL.
@@ -117,11 +159,11 @@ Certificates creation and deployment
    
 #. Enable and start the Elasticsearch service:
 
-    .. include:: ../../../../_templates/installations/basic/elastic/common/enable_elasticsearch.rst
+    .. include:: ../../../_templates/installations/basic/elastic/common/enable_elasticsearch.rst
 
 #. Generate credentials for all the Elastic Stack pre-built roles and users:
 
-    .. include:: ../../../../_templates/installations/basic/elastic/common/generate_elastic_credentials.rst
+    .. include:: ../../../_templates/installations/basic/elastic/common/generate_elastic_credentials.rst
 
 To check that the installation was made successfully, run the following command replacing ``<elastic_password>`` by the password generated on the previous step for ``elastic`` user:
 
@@ -169,21 +211,21 @@ Adding the Wazuh repository
   .. group-tab:: Yum
 
 
-    .. include:: ../../../../_templates/installations/basic/wazuh/yum/add_repository_aio.rst
+    .. include:: ../../../_templates/installations/basic/wazuh/yum/add_repository_aio.rst
 
 
 
   .. group-tab:: APT
 
 
-    .. include:: ../../../../_templates/installations/basic/wazuh/deb/add_repository_aio.rst
+    .. include:: ../../../_templates/installations/basic/wazuh/deb/add_repository_aio.rst
 
 
 
   .. group-tab:: ZYpp
 
 
-    .. include:: ../../../../_templates/installations/basic/wazuh/zypp/add_repository_aio.rst
+    .. include:: ../../../_templates/installations/basic/wazuh/zypp/add_repository_aio.rst
 
 
 
@@ -197,30 +239,30 @@ Installing the Wazuh manager
       .. group-tab:: Yum
 
 
-        .. include:: ../../../../_templates/installations/basic/wazuh/yum/install_wazuh_manager.rst
+        .. include:: ../../../_templates/installations/basic/wazuh/yum/install_wazuh_manager.rst
 
 
 
       .. group-tab:: APT
 
 
-        .. include:: ../../../../_templates/installations/basic/wazuh/deb/install_wazuh_manager.rst
+        .. include:: ../../../_templates/installations/basic/wazuh/deb/install_wazuh_manager.rst
 
 
 
       .. group-tab:: ZYpp
 
 
-        .. include:: ../../../../_templates/installations/basic/wazuh/zypp/install_wazuh_manager.rst
+        .. include:: ../../../_templates/installations/basic/wazuh/zypp/install_wazuh_manager.rst
 
 
 #. Enable and start the Wazuh manager service:
 
-    .. include:: ../../../../_templates/installations/wazuh/common/enable_wazuh_manager_service.rst
+    .. include:: ../../../_templates/installations/wazuh/common/enable_wazuh_manager_service.rst
 
 #. Run the following command to check if the Wazuh manager is active: 
 
-    .. include:: ../../../../_templates/installations/wazuh/common/check_wazuh_manager.rst    
+    .. include:: ../../../_templates/installations/wazuh/common/check_wazuh_manager.rst    
 
 .. _basic_wazuh_server_packages_filebeat:
 
@@ -242,28 +284,28 @@ Filebeat installation and configuration
       .. group-tab:: Yum
 
 
-        .. include:: ../../../../_templates/installations/basic/elastic/yum/install_filebeat.rst    
+        .. include:: ../../../_templates/installations/basic/elastic/yum/install_filebeat.rst    
 
 
 
       .. group-tab:: APT
 
 
-        .. include:: ../../../../_templates/installations/basic/elastic/deb/install_filebeat.rst
+        .. include:: ../../../_templates/installations/basic/elastic/deb/install_filebeat.rst
 
 
 
       .. group-tab:: ZYpp
 
 
-        .. include:: ../../../../_templates/installations/basic/elastic/zypp/install_filebeat.rst
+        .. include:: ../../../_templates/installations/basic/elastic/zypp/install_filebeat.rst
 
 
 #. Download the pre-configured Filebeat config file used to forward Wazuh alerts to Elasticsearch:
 
     .. code-block:: console
 
-      # curl -so /etc/filebeat/filebeat.yml https://raw.githubusercontent.com/wazuh/wazuh-documentation/4.0/resources/elastic-stack/filebeat/7.x/filebeat_all_in_one.yml
+      # curl -so /etc/filebeat/filebeat.yml https://raw.githubusercontent.com/wazuh/wazuh-documentation/3074_installation_guide_new_structure/resources/elastic-stack/filebeat/7.x/filebeat_all_in_one.yml
 
 #. Download the alerts template for Elasticsearch:
 
@@ -280,7 +322,7 @@ Filebeat installation and configuration
 
 #. Edit the file ``/etc/filebeat/filebeat.yml``:
 
-    .. include:: ../../../../_templates/installations/basic/elastic/common/configure_filebeat_aio.rst
+    .. include:: ../../../_templates/installations/basic/elastic/common/configure_filebeat_aio.rst
 
 
 #. Copy the certificates into ``/etc/filebeat/certs/``
@@ -294,7 +336,7 @@ Filebeat installation and configuration
 
 #. Enable and start the Filebeat service:
 
-    .. include:: ../../../../_templates/installations/basic/elastic/common/enable_filebeat.rst
+    .. include:: ../../../_templates/installations/basic/elastic/common/enable_filebeat.rst
 
 To ensure that Filebeat has been successfully installed, run the following command:
 
@@ -335,30 +377,30 @@ Kibana is a flexible and intuitive web interface for mining and visualizing the 
         .. group-tab:: Yum
 
 
-            .. include:: ../../../../_templates/installations/basic/elastic/yum/install_kibana.rst    
+            .. include:: ../../../_templates/installations/basic/elastic/yum/install_kibana.rst    
 
 
 
         .. group-tab:: APT
 
 
-            .. include:: ../../../../_templates/installations/basic/elastic/deb/install_kibana.rst
+            .. include:: ../../../_templates/installations/basic/elastic/deb/install_kibana.rst
 
 
 
         .. group-tab:: ZYpp
 
 
-            .. include:: ../../../../_templates/installations/basic/elastic/zypp/install_kibana.rst
+            .. include:: ../../../_templates/installations/basic/elastic/zypp/install_kibana.rst
 
 
 #. Copy the Elasticsearch certificates into the Kibana configuration folder:
 
-    .. include:: ../../../../_templates/installations/basic/elastic/common/copy_certificates_kibana_elastic_server.rst
+    .. include:: ../../../_templates/installations/basic/elastic/common/copy_certificates_kibana_elastic_server.rst
 
 #. Download the Kibana configuration file:
 
-    .. include:: ../../../../_templates/installations/basic/elastic/common/configure_kibana_all_in_one.rst
+    .. include:: ../../../_templates/installations/basic/elastic/common/configure_kibana_all_in_one.rst
 
 #. Update the ``optimize`` and ``plugins`` directories permissions:
 
@@ -382,7 +424,7 @@ Kibana is a flexible and intuitive web interface for mining and visualizing the 
 
 #. Enable and start the Kibana service:
 
-    .. include:: ../../../../_templates/installations/basic/elastic/common/enable_kibana.rst
+    .. include:: ../../../_templates/installations/basic/elastic/common/enable_kibana.rst
 
 
 #. Access the web interface using the password generated during the Elasticsearch installation process: 
@@ -400,7 +442,7 @@ Kibana is a flexible and intuitive web interface for mining and visualizing the 
 Disabling repositories
 ----------------------
 
-.. include:: ../../../../_templates/installations/basic/elastic/common/disabling_repositories_explanation.rst
+.. include:: ../../../_templates/installations/basic/elastic/common/disabling_repositories_explanation.rst
 
 
 .. tabs::
@@ -409,25 +451,142 @@ Disabling repositories
   .. group-tab:: Yum
 
 
-    .. include:: ../../../../_templates/installations/basic/wazuh/yum/disabling_repositories.rst
+    .. include:: ../../../_templates/installations/basic/wazuh/yum/disabling_repositories.rst
 
 
 
   .. group-tab:: APT
 
 
-    .. include:: ../../../../_templates/installations/basic/wazuh/deb/disabling_repositories.rst
+    .. include:: ../../../_templates/installations/basic/wazuh/deb/disabling_repositories.rst
 
 
 
   .. group-tab:: ZYpp
 
-    .. include:: ../../../../_templates/installations/basic/wazuh/zypp/disabling_repositories.rst
+    .. include:: ../../../_templates/installations/basic/wazuh/zypp/disabling_repositories.rst
 
 
-To uninstall all the components of the all in one installation, visit the :ref:`uninstalling section <user_manual_uninstall_wazuh_installation_basic>`.
 
 Next steps
 ----------
 
 Once the Wazuh environment is ready, a Wazuh agent can be installed in every endpoint to be monitored. The Wazuh agent installation guide is available for most operating systems and can be found :ref:`here<installation_agents>`.
+
+Uninstall
+---------
+
+In case you need to uninstall the Wazuh components follow the instructions below:
+
+
+Uninstall the Wazuh manager
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. tabs::
+
+
+  .. group-tab:: Yum
+
+
+    .. include:: ../../../_templates/installations/basic/wazuh/yum/uninstall_wazuh_manager_api.rst
+
+
+
+  .. group-tab:: APT
+
+
+    .. include:: ../../../_templates/installations/basic/wazuh/deb/uninstall_wazuh_manager_api.rst
+
+
+
+  .. group-tab:: ZYpp
+
+
+    .. include:: ../../../_templates/installations/basic/wazuh/zypp/uninstall_wazuh_manager_api.rst
+
+
+
+
+Uninstall Filebeat
+~~~~~~~~~~~~~~~~~~
+
+
+
+.. tabs::
+
+
+  .. group-tab:: Yum
+
+
+    .. include:: ../../../_templates/installations/basic/elastic/yum/uninstall_filebeat.rst
+
+
+
+  .. group-tab:: APT
+
+
+    .. include:: ../../../_templates/installations/basic/elastic/deb/uninstall_filebeat.rst
+
+
+
+  .. group-tab:: ZYpp  
+
+
+    .. include:: ../../../_templates/installations/basic/elastic/deb/uninstall_filebeat.rst
+
+
+
+
+Uninstall Elasticsearch
+~~~~~~~~~~~~~~~~~~~~~~~
+
+
+.. tabs::
+
+
+  .. group-tab:: Yum
+
+
+    .. include:: ../../../_templates/installations/basic/elastic/yum/uninstall_elasticsearch.rst
+
+
+
+  .. group-tab:: APT
+
+
+    .. include:: ../../../_templates/installations/basic/elastic/deb/uninstall_elasticsearch.rst
+
+
+
+  .. group-tab:: ZYpp
+
+
+    .. include:: ../../../_templates/installations/basic/elastic/zypp/uninstall_elasticsearch.rst
+
+   
+
+
+Uninstall Kibana
+~~~~~~~~~~~~~~~~
+
+.. tabs::
+
+
+  .. group-tab:: Yum
+
+
+    .. include:: ../../../_templates/installations/basic/elastic/yum/uninstall_kibana.rst
+
+
+
+  .. group-tab:: APT
+
+
+    .. include:: ../../../_templates/installations/basic/elastic/deb/uninstall_kibana.rst
+
+
+
+  .. group-tab:: ZYpp
+
+
+    .. include:: ../../../_templates/installations/basic/elastic/zypp/uninstall_kibana.rst   

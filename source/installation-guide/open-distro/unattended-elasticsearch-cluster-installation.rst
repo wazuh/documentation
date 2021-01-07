@@ -1,15 +1,79 @@
 .. Copyright (C) 2020 Wazuh, Inc.
 
+:orphan:
+
 .. _unattended_distributed_elasticsearch:
 
 Elasticsearch & Kibana unattended installation
 ==============================================
 
-This section will explain how to install Open Distro for Elasticsearch and Open Distro for Kibana using an automated script. This script will perform a health check to verify that the system has enough resources to achieve an optimal performance. For more information, please visit the :ref:`requirements <installation_requirements>` section. This script uses the Search Guard offline TLS tool to create the certificates. 
+This section will explain how to install Open Distro for Elasticsearch and Open Distro for Kibana using an automated script. This script will perform a health check to verify that the system has enough resources to achieve an optimal performance. This script uses the Search Guard offline TLS tool to create the certificates. 
 
 
-.. note:: Root user privileges are required to run all the commands described below. To download the script the package ``curl`` will be used.
+Requirements
+------------
 
+This section aims to provide guidance about the supported operating systems as well as the minimum hardware requirements for an Elastic Stack server. 
+
+Supported operating systems
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The Elastic Stack components can be installed in the following operating systems:
+
+- Amazon Linux 1 and 2.
+
+- CentOS 6 or greater.
+
+- Debian 8 or greater.
+
+- Oracle Linux 6 or greater.
+
+- Red Hat Enterprise Linux 6 or greater.
+
+- Ubuntu 16 or greater.
+
+- openSUSE Leap 42.
+
+- SLES 12 or greater. 
+
+- Windows Server 2012/R2 or greater. 
+
+
+Hardware requirements
+^^^^^^^^^^^^^^^^^^^^^
+
+Elastic Stack can be installed as a single-node or as multi-node cluster. Kibana can either be installed in the same node as Elasticsearch, or in a dedicated host. For each Elastic Stack node, the hardware recommendations are: 
+
++-------------------------+-------------------------+-------------------------------+
+|                         |  Minimum                |   Recommended                 |
++-------------------------+----------+--------------+--------------+----------------+
+| Component               |  RAM (GB)|  CPU (cores) |  RAM (GB)    |   CPU (cores)  |
++=========================+==========+==============+==============+================+
+| Elastic Stack           |     4    |     2        |     16       |       8        |
++-------------------------+----------+--------------+--------------+----------------+
+
+A 64-bit operating system is required.  
+
+Regarding the disk space requirements, the amount of data depends on the alerts per second (APS) generated. The following table shows an estimate of disk space per agent needed to store 90 days of alerts on an Elasticsearch server depending on the type of monitored endpoints. 
+
+
++-------------------------------------------------+-----+-----------------------------+
+| Monitored endpoints                             | APS | Storage in Elasticsearch    |
+|                                                 |     |   (GB/90 days)              | 
++=================================================+=====+=============================+
+| Servers                                         | 0.25|           3.7               |       
++-------------------------------------------------+-----+-----------------------------+
+| Workstations                                    | 0.1 |           1.5               |                    
++-------------------------------------------------+-----+-----------------------------+       
+| Network devices                                 | 0.5 |           7.4               |
++-------------------------------------------------+-----+-----------------------------+
+
+For example for an environment with 80 workstations, 10 servers and 10 networks devices the storage needed for 90 days of alerts would be around 230 GB on the Elasticsearch server.
+
+
+
+Installing Open Distro for Elasticsearch
+----------------------------------------
 
 The script allows installing both Elasticsearch and Kibana. They can be installed either together or in separate machines. The available options to run the script are:
 
@@ -31,8 +95,7 @@ The script allows installing both Elasticsearch and Kibana. They can be installe
 | -h / --help                   | Shows help                                                                                                    |
 +-------------------------------+---------------------------------------------------------------------------------------------------------------+
 
-Installing Open Distro for Elasticsearch
-----------------------------------------
+.. note:: Root user privileges are required to run all the commands described below. To download the script the package ``curl`` will be used.
 
 Download the script and the configuration file. After downloading them, configure the installation and run the script. Choose the cluster mode between single-node or multi-node:
 
@@ -44,12 +107,12 @@ Download the script and the configuration file. After downloading them, configur
 
       .. code-block:: console
 
-          # curl -so ~/elastic-stack-installation.sh https://raw.githubusercontent.com/wazuh/wazuh-documentation/4.0/resources/open-distro/unattended-installation/distributed/elastic-stack-installation.sh 
-          # curl -so ~/config.yml https://raw.githubusercontent.com/wazuh/wazuh-documentation/4.0/resources/open-distro/unattended-installation/distributed/templates/config.yml
+          # curl -so ~/elastic-stack-installation.sh https://raw.githubusercontent.com/wazuh/wazuh-documentation/3074_installation_guide_new_structure/resources/open-distro/unattended-installation/distributed/elastic-stack-installation.sh 
+          # curl -so ~/config.yml https://raw.githubusercontent.com/wazuh/wazuh-documentation/3074_installation_guide_new_structure/resources/open-distro/unattended-installation/distributed/templates/config.yml
 
     **Configure the installation** 
       
-      Edit the ``config.yml`` file to specify the IP you want the Elasticsearch service to bind to. 
+      Edit the ``~/config.yml`` file to specify the IP you want the Elasticsearch service to bind to. 
 
       .. note:: In order to create valid certificates for the communication between the various components of Wazuh and the Elastic Stack, external IPs must be used.
 
@@ -79,7 +142,7 @@ Download the script and the configuration file. After downloading them, configur
         - <wazuh_master_server_IP>
 
 
-      In case of having more than one Wazuh server, there can be added as many nodes as needed, changing the ``name`` of the certificate and the ``CN`` value. This should be indicated on the ``Clients certificates`` section: 
+      In case of having more than one Wazuh server, there can be added as many nodes for their certificates creation as needed, changing the ``name`` of the certificate and the ``CN`` value. This should be indicated on the ``Clients certificates`` section: 
 
         .. code-block:: yaml
 
@@ -97,17 +160,18 @@ Download the script and the configuration file. After downloading them, configur
         # bash ~/elastic-stack-installation.sh -e -n <node_name>
 
       
+      
 
   .. group-tab:: Multi-node
 
     **Initial node configuration and installation**
 
-    - Download the script and the configuration file ``config.yml``:
+    - Download the script and the configuration file ``~/config.yml``:
 
       .. code-block:: console
 
-          # curl -so ~/elastic-stack-installation.sh https://raw.githubusercontent.com/wazuh/wazuh-documentation/4.0/resources/open-distro/unattended-installation/distributed/elastic-stack-installation.sh 
-          # curl -so ~/config.yml https://raw.githubusercontent.com/wazuh/wazuh-documentation/4.0/resources/open-distro/unattended-installation/distributed/templates/config_cluster.yml
+          # curl -so ~/elastic-stack-installation.sh https://raw.githubusercontent.com/wazuh/wazuh-documentation/3074_installation_guide_new_structure/resources/open-distro/unattended-installation/distributed/elastic-stack-installation.sh 
+          # curl -so ~/config.yml https://raw.githubusercontent.com/wazuh/wazuh-documentation/3074_installation_guide_new_structure/resources/open-distro/unattended-installation/distributed/templates/config_cluster.yml
 
     - Configure the installation:
 
@@ -172,6 +236,7 @@ Download the script and the configuration file. After downloading them, configur
 
         # bash ~/elastic-stack-installation.sh -e -c -n <node_name>
 
+
     **Subsequent nodes installation**
 
       During the installation of the Elasticsearch initial node, the certificates were created and placed at ``~/certs.tar``. Before installing the subsequent nodes, this file must be placed on each involved node. After placing the ``certs.tar`` in the subsequent node, the installation can start:
@@ -180,7 +245,7 @@ Download the script and the configuration file. After downloading them, configur
 
       .. code-block:: console
 
-        # curl -so ~/elastic-stack-installation.sh https://raw.githubusercontent.com/wazuh/wazuh-documentation/4.0/resources/open-distro/unattended-installation/distributed/elastic-stack-installation.sh 
+        # curl -so ~/elastic-stack-installation.sh https://raw.githubusercontent.com/wazuh/wazuh-documentation/3074_installation_guide_new_structure/resources/open-distro/unattended-installation/distributed/elastic-stack-installation.sh 
 
 
     - In order to install the subsequent nodes, run the script with the option ``-e`` and ``-n <node_name>`` (this name must be the same used in ``config.yml`` for the certificate creation, e.g. ``master_node_x``):
@@ -188,6 +253,7 @@ Download the script and the configuration file. After downloading them, configur
       .. code-block:: console
 
         # bash ~/elastic-stack-installation.sh -e -n <node_name>   
+
 
     **Cluster initialization**
 
@@ -204,7 +270,7 @@ Configuring Elasticsearch
 
 Once Elasticsearch is installed, the script will start the services automatically. The certificates will be placed at ``~/certs.tar``. This file must be copied into the :ref:`Wazuh server <unattended_distributed_wazuh>` to extract the certificates needed.
 
-In case Kibana will be installed in a different server, the ``certs.tar`` file should be also copied into its server to extract the corresponding certificates.
+If Kibana will be installed in a different server, the ``certs.tar`` file should be also copied into its server to extract the corresponding certificates.
 
 
 .. _install_kibana_unattended:
@@ -216,7 +282,7 @@ Installing Kibana
 
     .. code-block:: console
 
-      # curl -so ~/elastic-stack-installation.sh https://raw.githubusercontent.com/wazuh/wazuh-documentation/4.0/resources/open-distro/unattended-installation/distributed/elastic-stack-installation.sh
+      # curl -so ~/elastic-stack-installation.sh https://raw.githubusercontent.com/wazuh/wazuh-documentation/3074_installation_guide_new_structure/resources/open-distro/unattended-installation/distributed/elastic-stack-installation.sh
 
 #. Run the script:
 
@@ -226,7 +292,7 @@ Installing Kibana
 
     The following values must be replaced:
 
-      - ``node_name``: Name of the instance (this name must be the same used in ``config.yml`` for the certificate creation, e.g. ``kibana``). 
+      - ``node_name``: Name of the instance (this name must be the same used in ``config.yml`` for the certificate creation, e.g. ``kibana``).
 
 #. Access the web interface: 
 
@@ -250,9 +316,70 @@ It is highly recommended to change Elasticsearch’s default passwords for the u
 
 Once Kibana is running it is necessary to assign each user its corresponding role. To learn more visit the :ref:`Setting up the Wazuh Kibana plugin <connect_kibana_app>` section. 
 
-If you need to uninstall Elasticsearch and Kibana, visit the :ref:`uninstalling section <user_manual_uninstall_wazuh_installation_open_distro>`.
 
 Next steps
-~~~~~~~~~~
+----------
 
 Once the Elastic Stack environment is ready, the Wazuh server can be installed. The Wazuh server installation guide can be found :ref:`here<unattended_distributed_wazuh>`.
+
+Uninstall
+---------
+
+In case you need to uninstall the Elastic Stack components follow the instructions below:  
+
+
+
+Uninstall Elasticsearch
+^^^^^^^^^^^^^^^^^^^^^^^
+
+
+.. tabs::
+
+
+  .. group-tab:: Yum
+
+
+    .. include:: ../../_templates/installations/elastic/yum/uninstall_elasticsearch.rst
+
+
+
+  .. group-tab:: APT
+
+
+    .. include:: ../../_templates/installations/elastic/deb/uninstall_elasticsearch.rst
+
+
+
+  .. group-tab:: ZYpp
+
+
+    .. include:: ../../_templates/installations/elastic/zypp/uninstall_elasticsearch.rst
+
+
+
+
+Uninstall Kibana
+^^^^^^^^^^^^^^^^
+
+
+.. tabs::
+
+
+  .. group-tab:: Yum
+
+
+    .. include:: ../../_templates/installations/elastic/yum/uninstall_kibana.rst
+
+
+
+  .. group-tab:: APT
+
+
+    .. include:: ../../_templates/installations/elastic/deb/uninstall_kibana.rst
+
+
+
+  .. group-tab:: ZYpp
+
+
+    .. include:: ../../_templates/installations/elastic/zypp/uninstall_kibana.rst   

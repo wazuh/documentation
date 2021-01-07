@@ -10,17 +10,19 @@ Kibana
 
 Kibana is a flexible and intuitive web interface for mining and visualizing the events and archives stored in Elasticsearch. 
 
-.. note:: Root user privileges are required to run all the commands described below.
+.. note:: This section will explain how to install Kibana step-by-step. Alternatively, if you wish to do this installation in an automated way, you can find the instructions :ref:`here <unattended_distributed_elasticsearch>`.
 
 Prerequisites
-~~~~~~~~~~~~~
+-------------
+
+.. note:: Root user privileges are required to run all the commands described below.
 
 Before installing Kibana, some extra packages must be installed:
 
-.. include:: ../../../../../_templates/installations/elastic/common/before_installation_kibana.rst
+.. include:: ../../_templates/installations/elastic/common/before_installation_kibana.rst
 
 Adding the Wazuh repository
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
+---------------------------
 
 This step is required only if Kibana will be installed on a separate host where Elasticsearch was installed.
 
@@ -29,26 +31,26 @@ This step is required only if Kibana will be installed on a separate host where 
   .. group-tab:: Yum
 
 
-    .. include:: ../../../../../_templates/installations/wazuh/yum/add_repository.rst
+    .. include:: ../../_templates/installations/wazuh/yum/add_repository.rst
 
 
 
   .. group-tab:: APT
 
 
-    .. include:: ../../../../../_templates/installations/wazuh/deb/add_repository.rst
+    .. include:: ../../_templates/installations/wazuh/deb/add_repository.rst
 
 
 
   .. group-tab:: Zypp
 
 
-    .. include:: ../../../../../_templates/installations/wazuh/zypp/add_repository.rst
+    .. include:: ../../_templates/installations/wazuh/zypp/add_repository.rst
 
 
 
 Kibana installation and configuration
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+-------------------------------------
 
 #. Install the Kibana package:
 
@@ -57,27 +59,27 @@ Kibana installation and configuration
         .. group-tab:: Yum
 
 
-            .. include:: ../../../../../_templates/installations/elastic/yum/install_kibana.rst
+            .. include:: ../../_templates/installations/elastic/yum/install_kibana.rst
 
 
 
         .. group-tab:: APT
 
 
-            .. include:: ../../../../../_templates/installations/elastic/deb/install_kibana.rst
+            .. include:: ../../_templates/installations/elastic/deb/install_kibana.rst
 
 
 
         .. group-tab:: Zypp
 
 
-            .. include:: ../../../../../_templates/installations/elastic/zypp/install_kibana.rst
+            .. include:: ../../_templates/installations/elastic/zypp/install_kibana.rst
 
 
 
 #. Download the Kibana configuration file:
 
-    .. include:: ../../../../../_templates/installations/elastic/common/configure_kibana.rst
+    .. include:: ../../_templates/installations/elastic/common/configure_kibana.rst
 
 
 #. Update the ``optimize`` and ``plugins`` directories permissions:
@@ -99,7 +101,7 @@ Kibana installation and configuration
 
 #. The next step involves the certificates placement. This guide assumes that a copy of ``certs.tar`` is placed in the root home folder (~/):
 
-    .. include:: ../../../../../_templates/installations/elastic/common/generate_new_kibana_certificates.rst
+    .. include:: ../../_templates/installations/elastic/common/generate_new_kibana_certificates.rst
 
 
 #. Link Kibana's socket to privileged port 443:
@@ -111,7 +113,7 @@ Kibana installation and configuration
 
 #. Enable and start the Kibana service:
 
-    .. include:: ../../../../../_templates/installations/elastic/common/enable_kibana.rst
+    .. include:: ../../_templates/installations/elastic/common/enable_kibana.rst
 
 
 #. Access the web interface: 
@@ -140,9 +142,36 @@ With the first access attempt, the Wazuh Kibana plugin may prompt a message that
 
 Once Kibana is running it is necessary to assign each user its corresponding role. To learn more visit the :ref:`Setting up the Wazuh Kibana plugin <connect_kibana_app>` section. 
 
-To uninstall Kibana, visit the :ref:`uninstalling section <uninstall_kibana>`.
 
 Next steps
-~~~~~~~~~~
+----------
 
 Once the Wazuh environment is ready, a Wazuh agent can be installed in every endpoint to be monitored. The Wazuh agent installation guide is available for most operating systems and can be found :ref:`here<installation_agents>`.
+
+
+Uninstall Kibana
+----------------
+
+In case you need to uninstall Kibana follow the instructions below: 
+
+.. tabs::
+
+
+  .. group-tab:: Yum
+
+
+    .. include:: ../../_templates/installations/elastic/yum/uninstall_kibana.rst
+
+
+
+  .. group-tab:: APT
+
+
+    .. include:: ../../_templates/installations/elastic/deb/uninstall_kibana.rst
+
+
+
+  .. group-tab:: ZYpp
+
+
+    .. include:: ../../_templates/installations/elastic/zypp/uninstall_kibana.rst   

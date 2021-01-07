@@ -8,17 +8,16 @@
 Kibana
 ======
 
-Kibana is a flexible and intuitive web interface for mining and visualizing the events and archives stored in Elasticsearch.
+Kibana is a flexible and intuitive web interface for mining and visualizing the events and archives stored in Elasticsearch. 
 
+This section will explain how to install Kibana step-by-step. Alternatively, if you wish to do this installation in an automated way, you can find the instructions :ref:`here <basic_unattended_distributed_elasticsearch>`.
 
 .. note:: Root user privileges are required to run all the commands described below.
 
 Prerequisites
 ~~~~~~~~~~~~~
 
-Some extra packages are needed for the installation, such us ``curl`` or ``unzip``, that will be used in further steps: 
-
-.. include:: ../../../../../../_templates/installations/basic/before_installation_elastic.rst
+.. include:: ../../../_templates/installations/basic/before_installation_elastic.rst
 
 
 Adding the Elastic Stack repository
@@ -29,21 +28,21 @@ Adding the Elastic Stack repository
   .. group-tab:: Yum
 
 
-    .. include:: ../../../../../../_templates/installations/basic/elastic/yum/add_repository.rst
+    .. include:: ../../../_templates/installations/basic/elastic/yum/add_repository.rst
 
 
 
   .. group-tab:: APT
 
 
-    .. include:: ../../../../../../_templates/installations/basic/elastic/deb/add_repository.rst
+    .. include:: ../../../_templates/installations/basic/elastic/deb/add_repository.rst
 
 
 
   .. group-tab:: ZYpp
 
 
-    .. include:: ../../../../../../_templates/installations/basic/elastic/zypp/add_repository.rst
+    .. include:: ../../../_templates/installations/basic/elastic/zypp/add_repository.rst
 
 
 
@@ -57,31 +56,31 @@ Kibana installation and configuration
         .. group-tab:: Yum
 
 
-            .. include:: ../../../../../../_templates/installations/basic/elastic/yum/install_kibana.rst
+            .. include:: ../../../_templates/installations/basic/elastic/yum/install_kibana.rst
 
 
 
         .. group-tab:: APT
 
 
-            .. include:: ../../../../../../_templates/installations/basic/elastic/deb/install_kibana.rst
+            .. include:: ../../../_templates/installations/basic/elastic/deb/install_kibana.rst
 
 
 
         .. group-tab:: ZYpp
 
 
-            .. include:: ../../../../../../_templates/installations/basic/elastic/zypp/install_kibana.rst
+            .. include:: ../../../_templates/installations/basic/elastic/zypp/install_kibana.rst
 
 
 #. The next step is the certificate placement, this guide assumes that a copy of ``certs.zip`` is placed in the root home folder (~/):
 
-    .. include:: ../../../../../../_templates/installations/basic/elastic/common/deploy_kibana_certificate.rst
+    .. include:: ../../../_templates/installations/basic/elastic/common/deploy_kibana_certificate.rst
 
 
 #. Download the Kibana configuration file:
 
-    .. include:: ../../../../../../_templates/installations/basic/elastic/common/configure_kibana.rst
+    .. include:: ../../../_templates/installations/basic/elastic/common/configure_kibana.rst
 
 
 #. Update the ``optimize`` and ``plugins`` directories permissions:
@@ -109,7 +108,7 @@ Kibana installation and configuration
 
 #. Enable and start the Kibana service:
 
-    .. include:: ../../../../../../_templates/installations/basic/elastic/common/enable_kibana.rst
+    .. include:: ../../../_templates/installations/basic/elastic/common/enable_kibana.rst
 
 
 #. Access the web interface using the password generated during the Elasticsearch installation process: 
@@ -138,7 +137,7 @@ With the first access attempt, the Wazuh Kibana plugin may prompt a message that
 Disabling repositories
 ~~~~~~~~~~~~~~~~~~~~~~
 
-.. include:: ../../../../../../_templates/installations/basic/elastic/common/disabling_repositories_explanation.rst
+.. include:: ../../../_templates/installations/basic/elastic/common/disabling_repositories_explanation.rst
 
 
 .. tabs::
@@ -146,27 +145,56 @@ Disabling repositories
   .. group-tab:: Yum
 
 
-    .. include:: ../../../../../../_templates/installations/basic/elastic/yum/disabling_repositories.rst
+    .. include:: ../../../_templates/installations/basic/elastic/yum/disabling_repositories.rst
 
 
 
   .. group-tab:: APT
 
 
-    .. include:: ../../../../../../_templates/installations/basic/elastic/deb/disabling_repositories.rst
+    .. include:: ../../../_templates/installations/basic/elastic/deb/disabling_repositories.rst
 
 
 
   .. group-tab:: ZYpp
 
 
-    .. include:: ../../../../../../_templates/installations/basic/elastic/zypp/disabling_repositories.rst
+    .. include:: ../../../_templates/installations/basic/elastic/zypp/disabling_repositories.rst
 
 
 
-To uninstall Kibana, visit the :ref:`uninstalling section <basic_uninstall_kibana>`.
 
 Next steps
 ~~~~~~~~~~
 
 Once the Wazuh - Elastic Stack environment is ready, a Wazuh agent can be installed in every endpoint to be monitored. The Wazuh installation guide is available for most operating systems and it can be found :ref:`here<installation_agents>`.
+
+
+Uninstall Kibana
+~~~~~~~~~~~~~~~~
+
+
+In case you need to uninstall Kibana follow the instructions below:
+
+
+.. tabs::
+
+
+  .. group-tab:: Yum
+
+
+    .. include:: ../../../_templates/installations/basic/elastic/yum/uninstall_kibana.rst
+
+
+
+  .. group-tab:: APT
+
+
+    .. include:: ../../../_templates/installations/basic/elastic/deb/uninstall_kibana.rst
+
+
+
+  .. group-tab:: ZYpp
+
+
+    .. include:: ../../../_templates/installations/basic/elastic/zypp/uninstall_kibana.rst
