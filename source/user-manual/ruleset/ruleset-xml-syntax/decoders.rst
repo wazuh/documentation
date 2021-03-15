@@ -1,4 +1,4 @@
-.. Copyright (C) 2020 Wazuh, Inc.
+.. Copyright (C) 2021 Wazuh, Inc.
 
 .. _decoders_syntax:
 
@@ -79,7 +79,7 @@ At the beginning of the example is the full log of an event. The log firstly goe
 
 Afterwards, the decoder will begin the extraction of information from the log that is left. In this example, the decoder only analyzes: ``Connection closed by 192.168.1.33``.
 
-Before making a custom decoder, the first step should always be running the event log through :ref:`ossec-logtest <ossec-logtest>` to know where to start.
+Before making a custom decoder, the first step should always be running the event log through :ref:`wazuh-logtest <wazuh-logtest>` to know where to start.
 
 
 Options
@@ -455,9 +455,11 @@ Specifies how to treat the `NULL` fields coming from the JSON events. Only for t
 +--------------------+-------------------------------------------------------------------------+
 | **Allowed values** | string (It shows the NULL value as string)                              |
 +                    +-------------------------------------------------------------------------+
-|                    | discard (It discard NULL fields and doesn't store them into the alert)  |
+|                    | discard (It discards NULL fields and doesn't store them into the alert) |
 +                    +-------------------------------------------------------------------------+
 |                    | empty (It shows the NULL field as an empty field)                       |
+|                    |                                                                         |
+|                    | .. deprecated:: 3.7                                                     |
 +--------------------+-------------------------------------------------------------------------+
 
 json_array_structure

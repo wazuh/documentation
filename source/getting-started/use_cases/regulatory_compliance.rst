@@ -1,11 +1,11 @@
-.. Copyright (C) 2020 Wazuh, Inc.
+.. Copyright (C) 2021 Wazuh, Inc.
 
 .. _regulatory_compliance:
 
 Regulatory compliance
 =====================
 
-The Wazuh platform is often used to meet the technical aspects of regulatory compliance standards. Wazuh not only provides the necessary security controls (e.g. intrusion detection, configuration assessment, log analysis, vulnerability detection, etc.) to meet with the compliance requirements, but it also uses its SIEM capabilities to centralize, analyze, and enrich security data. 
+The Wazuh platform is often used to meet the technical aspects of regulatory compliance standards. Wazuh not only provides the necessary security controls such as intrusion detection, configuration assessment, log analysis, vulnerability detection, among others, to meet compliance requirements, but also uses its SIEM capabilities to centralize, analyze and enrich security data. 
 
 In order to provide regulatory compliance support, the Wazuh rules have carefully been mapped against compliance requirements. This way, when an alert is generated (a rule condition has been matched), it automatically includes compliance information. Here is the list of currently supported standards:
 
@@ -26,7 +26,8 @@ Besides, Wazuh rules include mapping with MITRE ATT&CK framework, which is used 
     <id>AH01276</id>
     <description>Apache: Attempt to access forbidden directory index.</description>
     <mitre>
-      <id>T1190</id>
+      <techniqueID>T1190</techniqueID>
+      <tacticID>TA0001</tacticID>
     </mitre>
     <group>access_denied,pci_dss_6.5.8,pci_dss_10.2.4,gdpr_IV_35.7.d,hipaa_164.312.b,nist_800_53_SA.11,nist_800_53_AU.14,nist_800_53_AC.7,tsc_CC6.6,tsc_CC7.1,tsc_CC6.1,tsc_CC6.8,tsc_CC7.2,tsc_CC7.3,</group>
   </rule>
@@ -98,7 +99,7 @@ Example of regulatory compliance dashboard for PCI DSS:
    :align: center
    :width: 100%
 
-More information about how Wazuh helps meet regulatory compliance requirements can be found at:
+More information on how Wazuh helps meet compliance requirements can be found at:
 
 - :ref:`Using Wazuh for PCI DSS <pci_dss>`
 - :ref:`Using Wazuh for GDPR <gdpr>`

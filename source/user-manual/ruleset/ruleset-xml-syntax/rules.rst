@@ -1,4 +1,4 @@
-.. Copyright (C) 2020 Wazuh, Inc.
+.. Copyright (C) 2021 Wazuh, Inc.
 
 .. _rules_syntax:
 
@@ -449,7 +449,7 @@ Example:
   .. code-block:: xml
 
       <rule id="100105" level="8">
-          <if_sid>100100<if_sid>
+          <if_sid>100100</if_sid>
           <srcip>10.25.23.12</srcip>
           <description>Forbidden srcip has been detected.</description>
       </rule>
@@ -487,7 +487,7 @@ Example:
   .. code-block:: xml
 
       <rule id="100110" level="5">
-          <if_sid>100100<if_sid>
+          <if_sid>100100</if_sid>
           <dstip>!198.168.41.30</dstip>
           <description>A different dstip has been detected.</description>
       </rule>
@@ -527,7 +527,7 @@ Example:
   .. code-block:: xml
 
       <rule id="100110" level="5">
-          <if_sid>100100<if_sid>
+          <if_sid>100100</if_sid>
           <srcport type="pcre2">^5000[0-7]$</srcport>
           <description>Source port $(srcport) is detected.</description>
       </rule>
@@ -2259,15 +2259,17 @@ It's a very useful label to keep the rules ordered.
 
 mitre
 ^^^^^
-.. versionadded:: 3.13.0
+.. versionadded:: 5.0.0
 
-Specifies the `MITRE ATT&CK <https://attack.mitre.org>`_ technique ID or IDs that fit in well with the rule.
+Specifies both `MITRE ATT&CK <https://attack.mitre.org>`_ technique ID and tactic ID or pairs of technique ID and tactic ID that fit in well with the rule.
 
-+----------------+----------------------------+
-| Required label | Value                      |
-+================+============================+
-| **id**         | MITRE ATT&CK technique ID. |
-+----------------+----------------------------+
++-----------------+----------------------------+
+| Required label  | Value                      |
++=================+============================+
+| **techniqueID** | MITRE ATT&CK technique ID. |
++-----------------+----------------------------+
+| **tacticID**    | MITRE ATT&CK tactic ID.    |
++-----------------+----------------------------+
 
 Example:
 
@@ -2276,8 +2278,12 @@ Example:
     <rule id="100002" level="10">
       <description>Attack technique sample.</description>
       <mitre>
-        <id>T1110</id>
-        <id>T1037</id>
+        <techniqueID>T1562.001</techniqueID>
+        <tacticID>TA0005</tacticID>
+      </mitre>
+      <mitre>
+        <techniqueID>T1594</techniqueID>
+        <tacticID>TA0043</tacticID>
       </mitre>
     </rule>
 
