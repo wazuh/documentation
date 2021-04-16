@@ -211,11 +211,11 @@ To perform the upgrade locally, follow the instructions for the operating system
           # /var/ossec/bin/wazuh-control stop
 
 
-    #. Backup the ``ossec.conf`` configuration file:
+    #. Backup the ``agent.conf`` configuration file:
 
         .. code-block:: console
 
-          # cp /var/ossec/etc/ossec.conf ~/ossec.conf.bk
+          # cp /var/ossec/etc/agent.conf ~/agent.conf.bk
           # cp /var/ossec/etc/client.keys ~/client.keys.bk
 
 
@@ -241,12 +241,12 @@ To perform the upgrade locally, follow the instructions for the operating system
               # pkgadd -d wazuh-agent_v|WAZUH_LATEST|-sol10-sparc.pkg wazuh-agent
 
 
-    #. Restore the ``ossec.conf`` configuration file:
+    #. Restore the ``agent.conf`` configuration file:
 
         .. code-block:: console
 
-          # mv ~/ossec.conf.bk /var/ossec/etc/ossec.conf
-          # chown root:ossec /var/ossec/etc/ossec.conf
+          # mv ~/agent.conf.bk /var/ossec/etc/agent.conf
+          # chown root:ossec /var/ossec/etc/agent.conf
 
 
     #. Start the wazuh-agent:
@@ -267,11 +267,11 @@ To perform the upgrade locally, follow the instructions for the operating system
             # /var/ossec/bin/wazuh-control stop
 
 
-      #. Backup the ``ossec.conf`` configuration file:
+      #. Backup the ``agent.conf`` configuration file:
 
           .. code-block:: console
 
-            # cp /var/ossec/etc/ossec.conf ~/ossec.conf.bk
+            # cp /var/ossec/etc/agent.conf ~/agent.conf.bk
             # cp /var/ossec/etc/client.keys ~/client.keys.bk
 
 
@@ -282,12 +282,12 @@ To perform the upgrade locally, follow the instructions for the operating system
             # tar -xvf wazuh-agent-|WAZUH_LATEST|-|WAZUH_REVISION_HPUX|-hpux-11v3-ia64.tar
 
 
-      #. Restore the ``ossec.conf`` configuration file:
+      #. Restore the ``agent.conf`` configuration file:
 
           .. code-block:: console
 
-            # mv ~/ossec.conf.bk /var/ossec/etc/ossec.conf
-            # chown root:ossec /var/ossec/etc/ossec.conf
+            # mv ~/agent.conf.bk /var/ossec/etc/agent.conf
+            # chown root:ossec /var/ossec/etc/agent.conf
             # mv ~/client.keys.bk /var/ossec/etc/client.keys
             # chown root:ossec /var/ossec/etc/client.keys
 
@@ -299,7 +299,7 @@ To perform the upgrade locally, follow the instructions for the operating system
             # /var/ossec/bin/wazuh-control start
 
 
-Once the Wazuh agent is upgraded, if it still uses UDP, which was the default protocol for versions prior to Wazuh 4.x, it must be changed to TCP in the ``ossec.conf`` file:
+Once the Wazuh agent is upgraded, if it still uses UDP, which was the default protocol for versions prior to Wazuh 4.x, it must be changed to TCP in the ``agent.conf`` file:
 
 .. code-block:: console
   :emphasize-lines: 6

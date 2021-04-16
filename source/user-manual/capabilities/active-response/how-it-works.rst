@@ -22,7 +22,7 @@ Each active response specifies where its associated command will be executed: on
 Active response configuration
 -----------------------------
 
-Active responses are configured in the manager by modifying the :ref:`ossec.conf <reference_ossec_conf>` file as follows:
+Active responses are configured in the manager by modifying the :ref:`manager.conf <reference_manager_conf>` file as follows:
 
 1. Create a command
 
@@ -61,7 +61,7 @@ Active responses are configured in the manager by modifying the :ref:`ossec.conf
 	In this example, the active response is configured to execute the command that was defined in the previous step. The *where* of the action is defined as the local host and the *when* is defined as any time the rule has a level higher than 6.  The timeout that was allowed in the command configuration is also defined in the above example.
 
 .. note::
-	More information about active response options: :ref:`Active response <reference_ossec_active_response>`
+	More information about active response options: :ref:`Active response <reference_ossec_active_response_manager>`
 
 
 The active response log can be viewed at ``/var/ossec/logs/active-responses.log``.
@@ -73,31 +73,31 @@ Default Active response scripts
 
 Wazuh is pre-configured with the following scripts for Linux:
 
-+--------------------------+---------------------------------------------------------------+
-| Script name              |                          Description                          |
-+==========================+===============================================================+
-| disable-account          | Disables an account by setting ``passwd-l``                   |
-+--------------------------+---------------------------------------------------------------+
-| firewall-drop            | Adds an IP to the iptables deny list                          |
-+--------------------------+---------------------------------------------------------------+
-| firewalld-drop           | Adds an IP to the firewalld drop list                         |
-+--------------------------+---------------------------------------------------------------+
-| host-deny                | Adds an IP to the /etc/hosts.deny file                        |
-+--------------------------+---------------------------------------------------------------+
-| ip-customblock           | Custom OSSEC block, easily modifiable for custom response     |
-+--------------------------+---------------------------------------------------------------+
-| ipfw                     | Firewall-drop response script created for ipfw                |
-+--------------------------+---------------------------------------------------------------+
-| npf                      | Firewall-drop response script created for npf                 |
-+--------------------------+---------------------------------------------------------------+
-| wazuh-slack              | Posts modifications on Slack                                  |
-+--------------------------+---------------------------------------------------------------+
-| pf                       | Firewall-drop response script created for pf                  |
-+--------------------------+---------------------------------------------------------------+
-| restart-wazuh            | Automatically restarts Wazuh when ossec.conf has been changed |
-+--------------------------+---------------------------------------------------------------+
-| route-null               | Adds an IP to null route                                      |
-+--------------------------+---------------------------------------------------------------+
++--------------------------+-----------------------------------------------------------------+
+| Script name              |                          Description                            |
++==========================+=================================================================+
+| disable-account          | Disables an account by setting ``passwd-l``                     |
++--------------------------+-----------------------------------------------------------------+
+| firewall-drop            | Adds an IP to the iptables deny list                            |
++--------------------------+-----------------------------------------------------------------+
+| firewalld-drop           | Adds an IP to the firewalld drop list                           |
++--------------------------+-----------------------------------------------------------------+
+| host-deny                | Adds an IP to the /etc/hosts.deny file                          |
++--------------------------+-----------------------------------------------------------------+
+| ip-customblock           | Custom OSSEC block, easily modifiable for custom response       |
++--------------------------+-----------------------------------------------------------------+
+| ipfw                     | Firewall-drop response script created for ipfw                  |
++--------------------------+-----------------------------------------------------------------+
+| npf                      | Firewall-drop response script created for npf                   |
++--------------------------+-----------------------------------------------------------------+
+| wazuh-slack              | Posts modifications on Slack                                    |
++--------------------------+-----------------------------------------------------------------+
+| pf                       | Firewall-drop response script created for pf                    |
++--------------------------+-----------------------------------------------------------------+
+| restart-wazuh            | Automatically restarts Wazuh when agent.conf has been changed   |
++--------------------------+-----------------------------------------------------------------+
+| route-null               | Adds an IP to null route                                        |
++--------------------------+-----------------------------------------------------------------+
 
 The following pre-configured scripts are for Windows:
 
